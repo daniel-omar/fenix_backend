@@ -2,20 +2,20 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import * as request from 'supertest';
-import { environment } from '../../../../06-heroes-app/environments/environment.prod';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { UserService } from '../../user/services/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-  constructor(private jwtService: JwtService) { }
+  constructor(private jwtService: JwtService, private userService: UserService) { }
 
   async canActivate(
     context: ExecutionContext,
   ): Promise<boolean> {
+    // console.log(context)
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    console.log(token)
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -26,10 +26,13 @@ export class AuthGuard implements CanActivate {
           secret: process.env.JWT_SEED
         }
       );
-      console.log(payload)
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      request['user'] = payload;
+
+      const user = await this.userService.findById(payload.id_usuario);
+      if (!user) throw new UnauthorizedException("User does not exists");
+      if (!user.es_activo) throw new UnauthorizedException("User is not active");
+
+      request['user'] = user;
+      request['token'] = token;
     } catch {
       throw new UnauthorizedException();
     }
