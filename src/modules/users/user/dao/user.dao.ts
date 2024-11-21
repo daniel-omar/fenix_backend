@@ -24,9 +24,7 @@ export class UserDao {
         id_tipo_documento,
         numero_documento`, [correo, nombre, apellido_paterno, apellido_materno, clave, id_perfil, id_tipo_documento, numero_documento, numero_telefono]);
 
-    return {
-      user: user[0]
-    };
+    return user[0];
 
   }
 
@@ -34,9 +32,7 @@ export class UserDao {
 
     const user = await this.connection.query(`select * from usuarios where id_usuario=$1 limit 1;`, [id_usuario]);
 
-    return {
-      user: user[0]
-    };
+    return user[0];
   }
 
   // async register({ correo, nombre, apellido_paterno, apellido_materno, clave }: RegisterUserDto): Promise<any> {

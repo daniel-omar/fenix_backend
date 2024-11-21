@@ -4,16 +4,23 @@ import { Observable } from 'rxjs';
 import * as request from 'supertest';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { UserService } from '../../user/services/user.service';
+import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-  constructor(private jwtService: JwtService, private userService: UserService) { }
+  constructor(private jwtService: JwtService, private userService: UserService, private readonly reflector: Reflector) { }
 
   async canActivate(
-    context: ExecutionContext,
+    context: ExecutionContext
   ): Promise<boolean> {
-    // console.log(context)
+
+    const is_authorizated = this.reflector.get<boolean>("authorizated", context.getHandler());
+    if (!is_authorizated) {
+      return true;
+    }
+
+    //console.log(context)
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {

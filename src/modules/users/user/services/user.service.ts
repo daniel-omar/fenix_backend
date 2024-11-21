@@ -1,7 +1,4 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { Connection, QueryRunner } from 'typeorm';
-
-import { User } from '../../entities/user.entity';
 
 import * as bcryptjs from 'bcryptjs';
 

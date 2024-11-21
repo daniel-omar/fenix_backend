@@ -23,22 +23,22 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<LoginResponse> {
 
+    // const clave = bcryptjs.hashSync(loginDto.clave, 10);
+    const usuario = await this.authDao.login(loginDto);
 
-    const user = await this.authDao.login(loginDto);
-
-    if (!user) {
+    if (!usuario) {
       throw new UnauthorizedException("Credencial de correo no válida");
     }
 
-    if (!bcryptjs.compareSync(loginDto.clave, user.password)) {
+    if (!bcryptjs.compareSync(loginDto.clave, usuario.clave)) {
       throw new UnauthorizedException("Credencial de contraseña no válida");
     }
 
-    const { password: _, ...rest } = user;
+    const { clave: _, ...rest } = usuario;
 
     return {
-      user: rest,
-      token: this.authJwtService.getJwtToken({ id_usuario: user.id_usuario })
+      usuario: rest,
+      token: this.authJwtService.getJwtToken({ id_usuario: usuario.id_usuario })
     };
   }
 
