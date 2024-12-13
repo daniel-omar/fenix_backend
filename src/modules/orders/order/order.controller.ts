@@ -21,4 +21,18 @@ export class OrderController {
     };
   }
 
+  @Get("/getOrderById/:id_orden")
+  async getOrdersById(@Request() req: Request,
+    @Param('id_orden') id_orden: number,
+    @Body() body: any
+  ): Promise<ResponseDto> {
+    // console.log(body)
+    let response = await this.orderService.getOrderById(id_orden);
+    return {
+      status: Number(process.env.STATUS_SERVICES_OK),
+      data: response,
+      message: "success"
+    };
+  }
+
 }

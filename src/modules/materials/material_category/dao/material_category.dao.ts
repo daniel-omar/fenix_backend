@@ -16,4 +16,11 @@ export class MaterialCategoryDao {
     return material_categorys;
   }
 
+  async getById(id_categoria_material: number) {
+
+    const material_categorys = await this.connection.query(`select * from categoria_materiales where id_categoria_material=$1;`, [id_categoria_material]);
+
+    return material_categorys[0];
+  }
+
 }

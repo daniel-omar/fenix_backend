@@ -15,7 +15,8 @@ export class AuthGuard implements CanActivate {
     context: ExecutionContext
   ): Promise<boolean> {
 
-    const is_authorizated = this.reflector.get<boolean>("authorizated", context.getHandler());
+    const is_authorizated = this.reflector.get<boolean>("authorizated", context.getHandler()) ?? true;
+    // console.log(is_authorizated)
     if (!is_authorizated) {
       return true;
     }
@@ -23,6 +24,7 @@ export class AuthGuard implements CanActivate {
     //console.log(context)
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+    //console.log(token)
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -33,7 +35,7 @@ export class AuthGuard implements CanActivate {
           secret: process.env.JWT_SEED
         }
       );
-
+      //console.log(payload)
       const user = await this.userService.findById(payload.id_usuario);
       if (!user) throw new UnauthorizedException("User does not exists");
       if (!user.es_activo) throw new UnauthorizedException("User is not active");
@@ -48,6 +50,7 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
+    //console.log(request)
     const [type, token] = request.headers["authorization"]?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }

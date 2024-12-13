@@ -25,8 +25,10 @@ export class MaterialDao {
       if (columna.includes(`ids_categoria_material`)) {
         value = body[columna];
         if (value.length == 0) continue;
-        console.log(value)
         where += ` and m.id_categoria_material=any(array[${value}]::integer[])`;
+      } else {
+        value = body[columna];
+        where += ` and m.${columna}=${value}`;
       }
     }
 
@@ -50,4 +52,22 @@ export class MaterialDao {
     return orders;
   }
 
+  async getById(idMaterial: number) {
+
+    let query = `
+    select
+      m.id_material,
+      m.codigo_material,
+      m.nombre_material,
+      m.precio,
+      m.es_seriado
+    from materiales m 
+    where
+    1=1
+    and id_material=$1
+    ;`;
+    const materials = await this.connection.query(query, [idMaterial]);
+
+    return materials[0];
+  }
 }

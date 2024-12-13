@@ -18,4 +18,16 @@ export class MaterialCategoryController {
 
   }
 
+  @Get("/getById/:idCategoriaMaterial")
+  async getById(@Request() req: Request, @Param('idCategoriaMaterial') idCategoriaMaterial: number,): Promise<any> {
+    let response = await this.materialCategoryService.getById(idCategoriaMaterial);
+
+    return {
+      status: Number(process.env.STATUS_SERVICES_OK),
+      data: response,
+      message: "success"
+    };
+
+  }
+
 }

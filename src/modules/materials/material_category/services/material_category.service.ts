@@ -23,5 +23,18 @@ export class MaterialCategoryService {
 
   }
 
+  async getById(id_categoria_material: number): Promise<any> {
+
+    try {
+
+      const material_category = await this.materialCategoryDao.getById(id_categoria_material);
+      return material_category;
+
+    } catch (error) {
+      console.log(error.message)
+      throw new InternalServerErrorException(`${error.message}`);
+    }
+
+  }
 
 }

@@ -29,6 +29,21 @@ export class MaterialService {
     try {
 
       const materials = await this.materialDao.getList(body);
+      //const new_materials = this.groupByCategory(materials);
+      return materials;
+
+    } catch (error) {
+      console.log(error.message)
+      throw new InternalServerErrorException(`${error.message}`);
+    }
+
+  }
+
+  async getListGroup(body): Promise<any> {
+
+    try {
+
+      const materials = await this.materialDao.getList(body);
       const new_materials = this.groupByCategory(materials);
       return new_materials;
 
@@ -49,7 +64,8 @@ export class MaterialService {
         codigo_material: item_material?.codigo_material,
         nombre_material: item_material?.nombre_material,
         precio: item_material?.precio,
-        es_seriado: item_material?.es_seriado
+        es_seriado: item_material?.es_seriado,
+        id_categoria_material: item_material?.id_categoria_material,
       };
 
       if (category_material) {
@@ -66,6 +82,20 @@ export class MaterialService {
     }, []);
 
     return agrupadosPorCategoria;
+
+  }
+
+  async getById(idMaterial: number): Promise<any> {
+    try {
+
+      const material = await this.materialDao.getById(idMaterial);
+      //const new_materials = this.groupByCategory(materials);
+      return material;
+
+    } catch (error) {
+      console.log(error.message)
+      throw new InternalServerErrorException(`${error.message}`);
+    }
 
   }
 }
