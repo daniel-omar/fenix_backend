@@ -13,7 +13,7 @@ async function bootstrap() {
 
   const options = new DocumentBuilder()
     .setTitle('ISICOM API docs')
-    .addServer(`http://192.168.31.151:${process.env.PORT}/api`)
+    .addServer(`http://${process.env.IP_HOST}:${process.env.PORT}/api`)
     .addBearerAuth(
       {
         type: 'http',
