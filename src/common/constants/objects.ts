@@ -33,5 +33,12 @@ export class Objects {
     INACTIVO: false
   };
 
+  static ParentescoCliente = {
+    PADRE: "Padre",
+    HERMANO: "Hermano",
+    CONYUGUE: "Conyugue",
+    HIJO: "Hijo(a)",
+    OTRO: "Otro"
+  }
 
 }
