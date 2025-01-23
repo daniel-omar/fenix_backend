@@ -25,7 +25,7 @@ export class OrderDao {
       o.id_orden,
       o.numero_orden,
       o.direccion,
-      o.fecha_programacion,
+      to_char(o.fecha_programacion,'dd/MM/yyyy') fecha_programacion,
       c.id_cliente,
       c.nombre nombre_cliente,
       c.id_tipo_documento id_tipo_documento,
@@ -62,7 +62,7 @@ export class OrderDao {
       o.id_orden,
       o.numero_orden,
       o.direccion,
-      o.fecha_programacion,
+      to_char(o.fecha_programacion,'dd/MM/yyyy') fecha_programacion,
        c.id_cliente,
       c.nombre nombre_cliente,
       c.id_tipo_documento id_tipo_documento,
@@ -90,4 +90,111 @@ export class OrderDao {
 
     return order[0];
   }
+
+  async updateStatus({ idOrden, idEstadoOrden, fechaHoraActualizacion, idUsuarioActualizacion }, connection?: Connection | QueryRunner) {
+
+    if (!connection) connection = this.connection;
+
+    try {
+      let query = `
+        update ordenes o
+        set
+          id_estado_orden=$2,
+          fecha_hora_actualizacion=$3,
+          id_usuario_actualizacion=$4
+        where
+        o.id_orden=$1
+        RETURNING o.id_orden;`;
+      const returnQuery = await connection.query(query, [idOrden, idEstadoOrden, fechaHoraActualizacion, idUsuarioActualizacion]);
+
+      return {
+        message: 'updateStatus success',
+        data: returnQuery?.length ?? 0,
+        errors: null,
+      };
+    } catch (error) {
+      return {
+        errors: error.message,
+      };
+    }
+  }
+
+  async insertHistorial({ idOrden, idEstadoOrden, fechaHoraActualizacion, idUsuarioActualizacion }, connection?: Connection | QueryRunner) {
+    if (!connection) connection = this.connection;
+
+    try {
+      let query = `
+      insert into historial_ordenes(id_orden,id_estado_orden,id_usuario_registro,fecha_hora_registro)
+      values($1,$2,$3,$4)
+      RETURNING id_orden;`;
+      const returnQuery = await connection.query(query, [idOrden, idEstadoOrden, idUsuarioActualizacion, fechaHoraActualizacion]);
+
+      return {
+        message: 'insertHistorial success',
+        data: returnQuery?.length ?? 0,
+        errors: null,
+      };
+    } catch (error) {
+      return {
+        errors: error.message,
+      };
+    }
+  }
+
+  async insertDetails({ idOrden, materiales, fechaHoraActualizacion, idUsuarioActualizacion }, connection?: Connection | QueryRunner) {
+    if (!connection) connection = this.connection;
+
+    try {
+      let query = `
+       select func_guardar_orden_detalles response from func_guardar_orden_detalles($1,$2,$3,$4)
+      `;
+      const returnQuery = await connection.query(query, [idOrden, materiales, idUsuarioActualizacion, fechaHoraActualizacion]);
+
+      return {
+        message: 'insertDetails success',
+        data: 1,
+        errors: null,
+      };
+    } catch (error) {
+      return {
+        errors: error.message,
+      };
+    }
+
+  }
+
+  async insertCustomerOrder({ idOrden, idCliente, idTipoDocumento, numeroDocumento, nombre, apellidos, numeroTelefono, numeroTelefono2, correo, parentesco, fechaHoraRegistro }, connection?: Connection | QueryRunner) {
+    if (!connection) connection = this.connection;
+
+    try {
+      let query = `
+      insert into ordenes_clientes(
+        id_orden,
+        id_cliente,
+        id_tipo_documento,
+        numero_documento,
+        nombre,
+        apellidos,
+        numero_telefono,
+        numero_telefono_2,
+        correo,
+        parentesco,
+        fecha_hora_registro
+      )
+      values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+      RETURNING id_orden;`;
+      const returnQuery = await connection.query(query, [idOrden, idCliente, idTipoDocumento, numeroDocumento, nombre, apellidos, numeroTelefono, numeroTelefono2, correo, parentesco, fechaHoraRegistro]);
+
+      return {
+        message: 'insertCustomerOrder success',
+        data: returnQuery?.length ?? 0,
+        errors: null,
+      };
+    } catch (error) {
+      return {
+        errors: error.message,
+      };
+    }
+  }
+
 }

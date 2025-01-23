@@ -30,4 +30,27 @@ export class LiquidatedOrderDao {
     return details_order;
   }
 
+  async insertLiquidation({ idOrden, observacionTecnico, fechaHoraActualizacion }, connection?: Connection | QueryRunner) {
+    if (!connection) connection = this.connection;
+
+    try {
+      let query = `
+      insert into ordenes_liquidadas(id_orden,observacion_tecnico,fecha_hora_liquidacion)
+      values($1,$2,$3)
+      RETURNING id_orden;`;
+      const returnQuery = await connection.query(query, [idOrden, observacionTecnico, fechaHoraActualizacion]);
+
+      return {
+        message: 'insertLiquidation success',
+        data: returnQuery?.length ?? 0,
+        errors: null,
+      };
+    } catch (error) {
+      return {
+        errors: error.message,
+      };
+    }
+  }
+
+
 }

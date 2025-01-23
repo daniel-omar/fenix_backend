@@ -1,19 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { LiquidatedOrderService } from './services/liquidated_order.service';
 import { ResponseDto } from 'src/common/interfaces/response.dto';
+import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { User } from 'src/modules/users/entities/user.entity';
 
 
 @Controller('orders/liquidated_order')
 export class LiquidatedOrderController {
   constructor(private readonly liquidatedOrderService: LiquidatedOrderService) { }
 
-  @Get("/getDetailsByIdOrder/:id_orden")
-  async getDetailsByIdOrder(@Request() req: Request,
-    @Param('id_orden') id_orden: number,
+  @UseInterceptors(
+    //FileInterceptor('evidencias')
+    //AnyFilesInterceptor()
+    FilesInterceptor('evidencias')
+  )
+  @Post("/liquidateOrder")
+  async liquidateOrder(
+    @Request() req: Request,
+    @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() body: any
   ): Promise<ResponseDto> {
-    // console.log(body)
-    let response = await this.liquidatedOrderService.getDetailsByIdOrder(id_orden);
+    const user: User = req["user"];
+    body = JSON.parse(body.data);
+    body = {
+      ...body,
+      id_usuario: user.id_usuario
+    }
+    let response = await this.liquidatedOrderService.liquidateOrder(body);
     return {
       status: Number(process.env.STATUS_SERVICES_OK),
       data: response,

@@ -9,6 +9,21 @@ export class MaterialCategoryService {
     private materialCategoryDao: MaterialCategoryDao
   ) { }
 
+  async getList(body): Promise<any> {
+
+    try {
+
+      const materials_category = await this.materialCategoryDao.getList(body);
+      return materials_category;
+
+    } catch (error) {
+      console.log(error.message)
+      throw new InternalServerErrorException(`${error.message}`);
+    }
+
+  }
+
+
   async getAll(): Promise<any> {
 
     try {

@@ -6,6 +6,7 @@ import { DetailOrderModule } from './detail_order/detail_order.module';
 import { LiquidatedOrderModule } from './liquidated_order/liquidated_order.module';
 import { StateOrderModule } from './state_order/state_order.module';
 import { CustomerOrderModule } from './customer_order/customer_order.module';
+import { TypeEvidenceModule } from './type_evidence/type_evidence.module';
 
 @Module({
     controllers: [],
@@ -15,7 +16,8 @@ import { CustomerOrderModule } from './customer_order/customer_order.module';
         CustomerOrderModule,
         DetailOrderModule,
         LiquidatedOrderModule,
-        StateOrderModule
+        StateOrderModule,
+        TypeEvidenceModule
     ]
 })
 export class OrdersModule { }
